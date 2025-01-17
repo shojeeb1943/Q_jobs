@@ -64,7 +64,7 @@ class _WebAppState extends State<WebApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('JobsApp'),
+        title: const Text('Q Jobs'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
