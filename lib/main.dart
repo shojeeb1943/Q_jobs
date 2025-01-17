@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
+  // Preserve the splash screen until initialization is complete.
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 
@@ -11,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'JobsApp',
+      title: 'Q Jobs',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -33,31 +37,40 @@ class _WebAppState extends State<WebApp> {
   @override
   void initState() {
     super.initState();
+    initialization();
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            // Handle progress updates
+            // Optionally handle loading progress updates here
           },
           onPageStarted: (String url) {
-            // Handle page start
+            // Optionally handle when a page starts loading
           },
           onPageFinished: (String url) {
-            // Handle page finish
+            // Optionally handle when a page finishes loading
           },
           onWebResourceError: (WebResourceError error) {
-            // Handle web resource error
+            // Handle errors while loading resources
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
-              return NavigationDecision.prevent;
+            // Restrict navigation to your domain only
+            if (!request.url.startsWith('https://qjobsbd.com')) {
+              return NavigationDecision.prevent; // Block external URLs
             }
-            return NavigationDecision.navigate;
+            return NavigationDecision.navigate; // Allow navigation within qjobsbd.com
           },
         ),
       )
-      ..loadRequest(Uri.parse('https://qjobsbd.com'));
+      ..loadRequest(Uri.parse('https://qjobsbd.com')); // Load your website
+  }
+
+  // Initialization logic while showing the splash screen
+  void initialization() async {
+    await Future.delayed(const Duration(seconds: 2)); // Simulated delay for initialization
+    FlutterNativeSplash.remove(); // Remove splash screen after initialization
   }
 
   @override
@@ -69,7 +82,7 @@ class _WebAppState extends State<WebApp> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              _controller.reload();
+              _controller.reload(); // Reload the WebView
             },
           ),
         ],
